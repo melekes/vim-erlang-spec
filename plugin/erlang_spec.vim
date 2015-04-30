@@ -37,6 +37,8 @@ function! InsertSpec()"{{{
     norm! O
     call setline(line('.'), s)
   endfor
+
+  call s:set_cursor_to_first_argument(getline('.'))
 endfunction"}}}
 
 function! SearchDeclarations(flags, stopline)"{{{
@@ -125,6 +127,14 @@ endfunction"}}}
 function! s:synname()
   return join(map(synstack(line('.'), col('.')), 'synIDattr(v:val,"name")'), ' ')
 endfunction
+
+function! s:set_cursor_to_first_argument(line)"{{{
+  let first_argument_ends_at = matchend(a:line, '.*(\([A-Z]\+\)')
+  if first_argument_ends_at != -1
+    call cursor(line('.'), first_argument_ends_at)
+    norm! viw
+  endif
+endfunction"}}}
 
 " nnoremap <silent> <Plug>Spec :<C-U>call <SID>insertspec()<CR>
 
