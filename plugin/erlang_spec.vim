@@ -33,8 +33,10 @@ function! InsertSpec()"{{{
   let spec = GenerateSpecFor(all)
 
   call cursor(all[0], 1)
-  norm! O
-  call setline(line('.'), spec)
+  for s in reverse(spec)
+    norm! O
+    call setline(line('.'), s)
+  endfor
 endfunction"}}}
 
 function! SearchDeclarations(flags, stopline)"{{{
@@ -73,17 +75,18 @@ function! GenerateSpecFor(declarations)"{{{
 endfunction"}}}
 
 function! MultiLineSpec(declarations)"{{{
-  let spec = ""
+  let spec = []
   let i = 0
   for d in a:declarations
     let current_line = getline(d)
     if i == 0
-      let spec .= '-spec '.current_line.' any()'
+      call add(spec, '-spec '.current_line.' any()')
     else
-      let spec .= ';     '.current_line.' any()'
+      let s = ';     '.current_line.' any()'
       if i == len(a:declarations)-1
-        let spec .= '.'
+        let s .= '.'
       endif
+      call add(spec, s)
     endif
     let i += 1
   endfor
@@ -91,10 +94,9 @@ function! MultiLineSpec(declarations)"{{{
 endfunction"}}}
 
 function! OneLineSpec(declaration)"{{{
-  let spec = ""
   let current_line = getline(a:declaration)
-  let spec .= '-spec '.current_line.' any().'
-  return spec
+  let s = '-spec '.current_line.' any().'
+  return [s]
 endfunction"}}}
 
 function! FirstLineOfFunction()"{{{
