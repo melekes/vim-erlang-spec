@@ -12,20 +12,16 @@
 function! InsertSpec()"{{{
   norm! m'
 
-  let stopline = search('^$', 'Wbn')
-  if stopline == 0
-    let stopline = 1
-  endif
-
+  let stopline = FirstLineOfFunction()
   let above_and_current = reverse(SearchDeclarations("bc", stopline))
 
   norm! ''
   norm! m'
 
-  let stopline = search('^$', 'Wn')
-  if stopline == 0
-    let stopline = line("$")
-  endif
+  let stopline = LastLineOfFunction()
+
+  norm! ''
+  norm! m'
 
   let below = SearchDeclarations("", stopline)
 
@@ -63,25 +59,70 @@ endfunction"}}}
 " Returns line number of the next function declaration above (including current
 " line).
 function! SearchDeclaration(flags, stopline)"{{{
-  let pattern = '^\S\+('
+  let pattern = '^[0-9A-Za-z_]\+('
   return search(pattern, a:flags, a:stopline)
 endfunction"}}}
 
 function! GenerateSpecFor(declarations)"{{{
+  if len(a:declarations) > 1
+    return MultiLineSpec(a:declarations)
+  else
+    return OneLineSpec(a:declarations[0])
+  endif
+
+endfunction"}}}
+
+function! MultiLineSpec(declarations)"{{{
   let spec = ""
   let i = 0
   for d in a:declarations
     let current_line = getline(d)
-    " let function = strpart(current_line, 0, stridx(current_line, '('))
     if i == 0
-      let spec .= '-spec '.current_line.' term().'
+      let spec .= '-spec '.current_line.' any()'
     else
-      let spec .= current_line.' term().'
+      let spec .= ';     '.current_line.' any()'
+      if i == len(a:declarations)-1
+        let spec .= '.'
+      endif
     endif
     let i += 1
   endfor
   return spec
 endfunction"}}}
+
+function! OneLineSpec(declaration)"{{{
+  let spec = ""
+  let current_line = getline(a:declaration)
+  let spec .= '-spec '.current_line.' any().'
+  return spec
+endfunction"}}}
+
+function! FirstLineOfFunction()"{{{
+  let l = search('\(\.\|\%^\)\_s*\(%.*\n\|\_s\)*\n*\_^\s*\zs[a-z][a-zA-Z_0-9]*(', 'Wbnc')
+  if l == 0
+    let l = 1
+  endif
+  return l
+endfunction"}}}
+
+function! LastLineOfFunction()"{{{
+  let pattern = '\.\w\@!'
+
+  let l = search(pattern, 'Wc')
+  while l != 0 && s:synname() =~# 'erlangComment\|erlangString\|erlangSkippableAttributeDeclaration'
+    let l = search(pattern, 'W')
+  endwhile
+
+  if l == 0
+    let l = line('$')
+  endif
+
+  return l
+endfunction"}}}
+
+function! s:synname()
+  return join(map(synstack(line('.'), col('.')), 'synIDattr(v:val,"name")'), ' ')
+endfunction
 
 " nnoremap <silent> <Plug>Spec :<C-U>call <SID>insertspec()<CR>
 
