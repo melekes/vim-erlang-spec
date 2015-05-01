@@ -4,33 +4,33 @@
 " License:      Same as Vim itself.  See :help license
 " GetLatestVimScripts: XXXX 1 :AutoInstall: erlang_spec.vim
 
-" if exists("g:loaded_erlang_spec") || &cp
-"   finish
-" endif
-" let g:loaded_erlang_spec = 1
+if exists("g:loaded_erlang_spec") || &cp
+  finish
+endif
+let g:loaded_erlang_spec = 1
 
-function! InsertSpec()"{{{
+function! s:insert_spec()"{{{
   norm! m'
 
-  let stopline = FirstLineOfFunction()
-  let above_and_current = reverse(SearchDeclarations("bc", stopline))
+  let stopline = s:first_line_of_function()
+  let above_and_current = reverse(s:search_clauses("bc", stopline))
 
   norm! ''
   norm! m'
 
-  let stopline = LastLineOfFunction()
+  let stopline = s:last_line_of_function()
 
   norm! ''
   norm! m'
 
-  let below = SearchDeclarations("", stopline)
+  let below = s:search_clauses("", stopline)
 
   let all = above_and_current + below
   if all == []
     return
   endif
 
-  let spec = GenerateSpecFor(all)
+  let spec = s:generate_spec_for(all)
 
   call cursor(all[0], 1)
   for s in reverse(spec)
@@ -41,10 +41,10 @@ function! InsertSpec()"{{{
   call s:set_cursor_to_first_argument(getline('.'))
 endfunction"}}}
 
-function! SearchDeclarations(flags, stopline)"{{{
+function! s:search_clauses(flags, stopline)"{{{
   let declarations = []
 
-  let pos = SearchDeclaration(a:flags, a:stopline)
+  let pos = s:search_clause(a:flags, a:stopline)
 
   while pos != 0
     " we must move cursor in order to declarations above
@@ -54,29 +54,26 @@ function! SearchDeclarations(flags, stopline)"{{{
       call cursor(pos-1, 1)
     endif
     call add(declarations, pos)
-    let pos = SearchDeclaration(a:flags, a:stopline)
+    let pos = s:search_clause(a:flags, a:stopline)
   endwhile
 
   return declarations
 endfunction"}}}
 
-" Returns line number of the next function declaration above (including current
-" line).
-function! SearchDeclaration(flags, stopline)"{{{
+function! s:search_clause(flags, stopline)"{{{
   let pattern = '^[0-9A-Za-z_]\+('
   return search(pattern, a:flags, a:stopline)
 endfunction"}}}
 
-function! GenerateSpecFor(declarations)"{{{
+function! s:generate_spec_for(declarations)"{{{
   if len(a:declarations) > 1
-    return MultiLineSpec(a:declarations)
+    return s:multi_line_spec(a:declarations)
   else
-    return OneLineSpec(a:declarations[0])
+    return s:one_line_spec(a:declarations[0])
   endif
-
 endfunction"}}}
 
-function! MultiLineSpec(declarations)"{{{
+function! s:multi_line_spec(declarations)"{{{
   let spec = []
   let i = 0
   for d in a:declarations
@@ -95,13 +92,13 @@ function! MultiLineSpec(declarations)"{{{
   return spec
 endfunction"}}}
 
-function! OneLineSpec(declaration)"{{{
+function! s:one_line_spec(declaration)"{{{
   let current_line = getline(a:declaration)
   let s = '-spec '.current_line.' any().'
   return [s]
 endfunction"}}}
 
-function! FirstLineOfFunction()"{{{
+function! s:first_line_of_function()"{{{
   let l = search('\(\.\|\%^\)\_s*\(%.*\n\|\_s\)*\n*\_^\s*\zs[a-z][a-zA-Z_0-9]*(', 'Wbnc')
   if l == 0
     let l = 1
@@ -109,7 +106,7 @@ function! FirstLineOfFunction()"{{{
   return l
 endfunction"}}}
 
-function! LastLineOfFunction()"{{{
+function! s:last_line_of_function()"{{{
   let pattern = '\.\w\@!'
 
   let l = search(pattern, 'Wc')
@@ -136,6 +133,9 @@ function! s:set_cursor_to_first_argument(line)"{{{
   endif
 endfunction"}}}
 
-" nnoremap <silent> <Plug>Spec :<C-U>call <SID>insertspec()<CR>
+nnoremap <silent> <Plug>ErlangSpec :<C-U>call <SID>insert_spec()<CR>
+if !exists(':ErlangSpec')
+  command ErlangSpec silent call s:insert_spec()
+endif
 
 " vim:set ft=vim sw=2 sts=2 et:
