@@ -1,0 +1,41 @@
+*erlang_spec.txt*  Generate specifications for your Erlang functions
+
+Author:  Anton Kalyaev <http://homeonrails.com/about/>
+License: Same terms as Vim itself (see |license|)
+
+This plugin is only available if 'compatible' is not set.
+
+INTRODUCTION                                    *erlang-spec*
+
+When you are inside the function, call :ErlangSpec and this script will
+produce specification for it. It won't fill in the argument types for you,
+though.
+
+Consider the following example:
+
+  double([H|T]) -> [2*H|double(T)];
+  double([])    -> [].
+
+Plugin will produce:
+
+  -spec double([H|T]) -> any()
+  ;     double([])    -> any().
+  double([H|T]) -> [2*H|double(T)];
+  double([])    -> [].
+
+MAPPINGS                                        *erlang-spec-mappings*
+
+Plugin do not set any mappings. If you want to map it to some key, add mapping
+to your vimrc:
+
+  nnoremap <leader>s :ErlangSpec<CR>
+
+Change the mapped key to suit your taste.
+
+COMMANDS                                        *erlang-spec-commands*
+
+Plugin exposes :ErlangSpec command, which will create specification for the
+target function (if you are not inside any function, plugin won't produce any
+result).
+
+ vim:tw=78:ts=8:ft=help:norl:
