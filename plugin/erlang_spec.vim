@@ -78,12 +78,15 @@ endfunction"}}}
 function! s:multi_line_spec(clauses)"{{{
   let spec = []
   let i = 0
+  let spec_prefix = '-spec '
   for line_number in a:clauses
-    let clause_head = matchstr(getline(line_number), ".*->")
     if i == 0
-      call add(spec, '-spec '.clause_head.' any()')
+      let clause_head = matchstr(getline(line_number), "[^(]*([^)]*)")
+      call add(spec, spec_prefix.clause_head.' -> any()')
     else
-      let s = ';     '.clause_head.' any()'
+      let clause_head_without_fname = matchstr(getline(line_number), "([^)]*)")
+      let empty_spec_plus_fname = repeat(' ', stridx(getline(line_number), '(') + 5) " 5 <= strlen(spec_prefix) - 1
+      let s = ';'.empty_spec_plus_fname.clause_head_without_fname.' -> any()'
       if i == len(a:clauses)-1
         let s .= '.'
       endif
