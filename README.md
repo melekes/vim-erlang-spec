@@ -18,6 +18,12 @@ Add a mapping to your ~/.vimrc (change the key to suit your taste):
 
     nnoremap <leader>s :ErlangSpec<CR>
 
+TODO
+====
+
+[ ] transform record to record type (`#person{name=Name}` => `#person{}`)
+[ ] parse `is_integer` and other simple guards in when block (`f(N, _) when is_integer(N)` => `f(N, _) -> any() when N :: integer()`)
+
 [1]: https://github.com/tpope/vim-pathogen
 [2]: https://github.com/gmarik/vundle
 [3]: https://github.com/Shougo/neobundle.vim
