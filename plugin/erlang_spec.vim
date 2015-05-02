@@ -41,6 +41,8 @@ function! s:insert_spec()"{{{
   call s:set_cursor_to_first_argument(getline('.'))
 endfunction"}}}
 
+" Returns line numbers for all clauses, which it will be able to find until
+" the stopline.
 function! s:search_clauses(flags, stopline)"{{{
   let declarations = []
 
@@ -65,24 +67,24 @@ function! s:search_clause(flags, stopline)"{{{
   return search(pattern, a:flags, a:stopline)
 endfunction"}}}
 
-function! s:generate_spec_for(declarations)"{{{
-  if len(a:declarations) > 1
-    return s:multi_line_spec(a:declarations)
+function! s:generate_spec_for(clauses)"{{{
+  if len(a:clauses) > 1
+    return s:multi_line_spec(a:clauses)
   else
-    return s:one_line_spec(a:declarations[0])
+    return s:one_line_spec(a:clauses[0])
   endif
 endfunction"}}}
 
-function! s:multi_line_spec(declarations)"{{{
+function! s:multi_line_spec(clauses)"{{{
   let spec = []
   let i = 0
-  for d in a:declarations
-    let current_line = getline(d)
+  for line_number in a:clauses
+    let clause_head = matchstr(getline(line_number), ".*->")
     if i == 0
-      call add(spec, '-spec '.current_line.' any()')
+      call add(spec, '-spec '.clause_head.' any()')
     else
-      let s = ';     '.current_line.' any()'
-      if i == len(a:declarations)-1
+      let s = ';     '.clause_head.' any()'
+      if i == len(a:clauses)-1
         let s .= '.'
       endif
       call add(spec, s)
@@ -92,9 +94,9 @@ function! s:multi_line_spec(declarations)"{{{
   return spec
 endfunction"}}}
 
-function! s:one_line_spec(declaration)"{{{
-  let current_line = getline(a:declaration)
-  let s = '-spec '.current_line.' any().'
+function! s:one_line_spec(line_number)"{{{
+  let clause_head = matchstr(getline(a:line_number), ".*->")
+  let s = '-spec '.clause_head.' any().'
   return [s]
 endfunction"}}}
 
