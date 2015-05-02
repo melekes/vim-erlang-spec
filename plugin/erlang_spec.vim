@@ -128,7 +128,7 @@ function! s:synname()
 endfunction
 
 function! s:set_cursor_to_first_argument(line)"{{{
-  let first_argument_ends_at = matchend(a:line, '.*(\([A-Z]\+\)')
+  let first_argument_ends_at = matchend(a:line, '^[^A-Z]\+[A-Z]\+\C')
   if first_argument_ends_at != -1
     call cursor(line('.'), first_argument_ends_at)
     norm! viw
