@@ -12,24 +12,33 @@ let g:loaded_erlang_spec = 1
 function! s:insert_spec()"{{{
   norm! m'
 
-  let stopline = s:first_line_of_function()
-  let above_and_current = reverse(s:search_clauses("bc", stopline))
+  let first_line = s:first_line_of_function()
 
+  let last_line_above = s:last_line_of_function('b')
   norm! ''
   norm! m'
 
-  let stopline = s:last_line_of_function()
-
-  norm! ''
-  norm! m'
-
-  let below = s:search_clauses("", stopline)
-
-  let all = above_and_current + below
-  if all == []
+  if last_line_above > 0 && first_line < last_line_above " we are not inside the function
     return
   endif
 
+  let above_and_current = reverse(s:search_clauses("bc", first_line))
+  norm! ''
+  norm! m'
+
+  if above_and_current == []
+    return
+  endif
+
+  let last_line = s:last_line_of_function('')
+  norm! ''
+  norm! m'
+
+  let below = s:search_clauses("", last_line)
+  norm! ''
+  norm! m'
+
+  let all = above_and_current + below
   let spec = s:generate_spec_for(all)
 
   call cursor(all[0], 1)
@@ -111,15 +120,15 @@ function! s:first_line_of_function()"{{{
   return l
 endfunction"}}}
 
-function! s:last_line_of_function()"{{{
+function! s:last_line_of_function(flags)"{{{
   let pattern = '\.\w\@!'
 
-  let l = search(pattern, 'Wc')
+  let l = search(pattern, 'Wc'.a:flags)
   while l != 0 && s:synname() =~# 'erlangComment\|erlangString\|erlangSkippableAttributeDeclaration'
-    let l = search(pattern, 'W')
+    let l = search(pattern, 'W'.a:flags)
   endwhile
 
-  if l == 0
+  if l == 0 && a:flags == ''
     let l = line('$')
   endif
 
