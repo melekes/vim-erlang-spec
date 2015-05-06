@@ -7,7 +7,7 @@ When you are inside the function, call `:ErlangSpec` and this script will
 produce specification for it. It won't fill in the argument types for you,
 though.
 
-[![asciicast](https://asciinema.org/a/19602.png)](https://asciinema.org/a/19602)
+[![asciicast](https://asciinema.org/a/19604.png)](https://asciinema.org/a/19604?autoplay=1)
 
 Installation
 ============
