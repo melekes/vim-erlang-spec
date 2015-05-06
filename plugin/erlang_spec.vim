@@ -1,8 +1,8 @@
 " erlang_spec.vim - Generate specs for your Erlang functions
 " Author:       Anton Kalyaev <http://homeonrails.com/about/>
-" Version:      0.2
+" Version:      0.2.1
 " License:      Same as Vim itself.  See :help license
-" GetLatestVimScripts: XXXX 1 :AutoInstall: erlang_spec.vim
+" GetLatestVimScripts: 5169 1 :AutoInstall: erlang_spec.vim
 
 if exists("g:loaded_erlang_spec") || &cp
   finish
