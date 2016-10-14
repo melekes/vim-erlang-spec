@@ -1,5 +1,4 @@
-vim-erlang-spec
-===============
+# vim-erlang-spec
 
 Generate specifications for your Erlang functions.
 
@@ -9,8 +8,7 @@ though.
 
 [![asciicast](https://asciinema.org/a/19604.png)](https://asciinema.org/a/19604?autoplay=1)
 
-Installation
-============
+## Installation
 
 - [Pathogen][1] `git clone https://github.com/akalyaev/vim-erlang-spec ~/.vim/bundle/vim-erlang-spec`
 - [Vundle][2] `Bundle 'akalyaev/vim-erlang-spec'`
@@ -20,16 +18,14 @@ Add a mapping to your ~/.vimrc (change the key to suit your taste):
 
     nnoremap <leader>s :ErlangSpec<CR>
 
-Alternative way - TypEr
-=======================
+## Alternative way - TypEr
 
 If you are new to Erlang, you may be not aware of TypEr - tool, which can be
 used to generate type annotations for functions. You can read about it
 [here](http://learnyousomeerlang.com/types-or-lack-thereof) or in the "Erlang
 Programming" book ("TypEr: Success Types and Type Inference").
 
-TODO
-====
+## TODO
 
 - [ ] transform record to record type (`#person{name=Name}` => `#person{}`)
 - [ ] parse `is_integer` and other simple guards in when block (`f(N, _) when is_integer(N)` => `f(N, _) -> any() when N :: integer()`)
