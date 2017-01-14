@@ -10,9 +10,9 @@ though.
 
 ## Installation
 
-- [Pathogen][1] `git clone https://github.com/akalyaev/vim-erlang-spec ~/.vim/bundle/vim-erlang-spec`
-- [Vundle][2] `Bundle 'akalyaev/vim-erlang-spec'`
-- [NeoBundle][3] `NeoBundle 'akalyaev/vim-erlang-spec'`
+- [Pathogen][1] `git clone https://github.com/melekes/vim-erlang-spec ~/.vim/bundle/vim-erlang-spec`
+- [Vundle][2] `Bundle 'melekes/vim-erlang-spec'`
+- [NeoBundle][3] `NeoBundle 'melekes/vim-erlang-spec'`
 
 Add a mapping to your ~/.vimrc (change the key to suit your taste):
 
